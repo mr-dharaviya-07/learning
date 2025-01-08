@@ -2,7 +2,21 @@
 
 {
     "users" : [
-        
+        {
+            "name" : "ABC",
+            "email": "abc@gmail.com",
+            "password":"1234"
+        },
+        {
+            "name" : "DEF",
+            "email": "def@gmail.com",
+            "password":"5678"
+        },
+        {
+            "name" : "GHI",
+            "email": "ghi@gmail.com",
+            "password":"9123"
+        }
 
     ]
 

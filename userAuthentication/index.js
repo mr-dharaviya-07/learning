@@ -6,7 +6,7 @@ const PORT = 4000;
 app.use(express.json());
 
 // Load user data
-const data = require("./users.json");
+const data = require("./user.json");
 const users = data.users;
 
 // Endpoint to get all users
@@ -20,14 +20,15 @@ app.post("/login", (req, res) => {
     const user = users.find(user => user.email === req.body.email);
 
     if (!user) {
-        return res.status(404).send({ message: "User does not exist" });
+        res.send("User does not exist" );
     }
 
     // Check password
     if (user.password === req.body.password) {
-        return res.status(200).send({ message: "Login successful!" });
+        console.log("Login successful!");
+        res.send("Login successful!");
     } else {
-        return res.status(401).send({ message: "Incorrect password" });
+         res.send({ message: "Incorrect password" });
     }
 });
 
