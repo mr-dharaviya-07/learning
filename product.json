@@ -1,0 +1,24 @@
+{
+    "products": [
+        {
+            "name": "watch",
+            "Price": 1000
+        },
+        {
+            "name": "shoes",
+            "Price": 2000
+        },
+        {
+            "name": "shirt",
+            "Price": 500
+        },
+        {
+            "name": "jeans",
+            "Price": 1500
+        },
+        {
+            "name": "mobile",
+            "Price": 10000
+        }
+    ]
+}
