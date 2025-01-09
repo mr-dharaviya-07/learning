@@ -22,38 +22,8 @@
         },
         {
             "id": 4,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
-            "password" : "9012"
-        },
-        {
-            "id": 5,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
-            "password" : "9012"
-        },
-        {
-            "id": 5,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
-            "password" : "9012"
-        },
-        {
-            "id": 6,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
-            "password" : "9012"
-        },
-        {
-            "id": 7,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
-            "password" : "9012"
-        },
-        {
-            "id": 8,
-            "name" : "GHI",
-            "email" : "ghi@gmail.com",
+            "name" : "JKL",
+            "email" : "jkl@gmail.com",
             "password" : "9012"
         }
     ]
