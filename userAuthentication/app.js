@@ -10,10 +10,8 @@ const PORT = 4000;
 
 app.use(cors());
 
-// Middleware to parse JSON request bodies
 app.use(express.json());
 
-// Middleware to parse URL-encoded data (for form submissions)
 app.use(express.urlencoded({ extended: true }));
 
 const data = require("./users.json");
@@ -28,22 +26,19 @@ app.post("/login", (req, res) => {
 
         const { email, password } = req.body
 
-        console.log(email);
-        console.log(password);
         const user = users.find((user) => {
             return user.email === email;
         })
 
         if (!user) {
-            res.send({message: "User Does not Excied.."});
+            res.send({message: "Invalid Email and Password"});
 
         }
-
-        if (user.password === password) {
-            console.log("login Successfully....");
-            res.send({ message: "login Successfully...."});
-        }else{
-            res.send({ message: "Invalid Password"});
+        else if (user.password === password) {
+            res.send({userName: user.name});
+        }
+        else{
+            res.send({ message: "Invalid Email and Password"});
         }
     }
 )
