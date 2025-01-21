@@ -81,7 +81,7 @@ const Profile = () => {
 
 
 
-                <div className=" h-72 w-96 m-3 flex flex-col justify-around items-center p-2 rounded">
+                <div className=" h-72 w-96 flex flex-col justify-around items-center rounded">
                     <h1 className="text-blue-600 text-5xl">
                         Welcome,  {name} !
                     </h1>

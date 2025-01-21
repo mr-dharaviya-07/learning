@@ -97,11 +97,12 @@ export const Form = ({ data }) => {
 
             <div className="fixed top-0 h-screen w-screen flex flex-col justify-center items-center">
 
-                {responseError ? <Response value={{ text: responseError, response: "error" }} alert={alert} /> : <Response value={{ text: response, response: "" }} alert={alert} />}
 
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className=" m-2 w-96 rounded-lg bg-white flex flex-col justify-center items-center shadow-2xl" >
 
                     <h1 className="relative top-4 text-blue-600 font-semibold m-2" style={{ fontSize: "30px" }}>Update Your Profile</h1>
+                    
+                    {responseError ? <Response value={{ text: responseError, response: "error" }} alert={alert} /> : <Response value={{ text: response, response: "" }} alert={alert} />}
 
                     <div className="flex w-5/6 flex-col m-3">
                         <label htmlFor="name" className="text-base p-1">Name</label>
