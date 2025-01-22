@@ -16,10 +16,6 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 
-
-
-
-
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
@@ -43,15 +39,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-
-//     const filePath = `/uploads/${req.file.filename}`;
-//     console.log(filePath)
-
-//     connection.query("INSERT INTO files (file_path) VALUES (?)", [filePath], (err, result) => {
-//         if (err) throw err;
-//         res.send({ message: 'File uploaded successfully!', file: filePath });
-//     });
-// });
 
 app.post('/login', (req, res) => {
 
@@ -152,7 +139,7 @@ app.put('/update-profile/:userId',upload.single('profilePicture'), (req, res) =>
 
     const userId = req.params.userId;
     const { name, phoneNumber, dob, gender } = req.body;
-    
+
     let profilePicture = req.file ? req.file.filename : req.body.oldProfilePicture;
     connection.query('UPDATE register_user SET name = ?,phone_number = ?,gender = ?, dob = ?, profile_picture =? WHERE id = ?', [name, phoneNumber, gender, dob,profilePicture,userId], (error, results) => {
         if (error) {
