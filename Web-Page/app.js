@@ -31,25 +31,44 @@ function changeSlider(position) {
     }
 }
 
-// var swiper = new Swiper(".mySwiper", {
-//     effect: "cards",
-//     grabCursor: true,
-//   });
+const menu_container = document.querySelector('.move-container');
 
+const slide = document.querySelectorAll('.slider-container');
 
-const menu_container = document.querySelector('.menu-container');
+const oneSlide = document.querySelector('.slider-container');
+
+console.log(oneSlide.clientWidth);
 
 let counter = 0;
-const moveRight = () => {
-    counter++;
-    let move = counter * 1270;
-    console.log(move);
-    menu_container.style.transform = `translateX(-${move}px)`;
+
+
+const  moveRight = () => {
+
+    if (counter < slide.length - 1) {
+        counter++;
+        let move = counter * oneSlide.clientWidth;
+        menu_container.style.transform = `translateX(-${move}px)`;
+    }
+    else {
+        counter = 0;
+        menu_container.style.transform = `translateX(0px)`;
+    }
 }
 
 const moveLeft = () => {
-    counter--;
-    let move = counter * 1270;
-    menu_container.style.transform = `translateX(-${move}px)`;
+    if (counter > 0) {
+        counter--;
+        let move = counter * oneSlide.clientWidth;
+        menu_container.style.transform = `translateX(-${move}px)`;
+    }
 }
+
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'ArrowRight') {
+        moveRight();
+    } else if (event.key === 'ArrowLeft') {
+        moveLeft();
+    }
+});
 
