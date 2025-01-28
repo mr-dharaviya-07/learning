@@ -1,11 +1,9 @@
 
 
-
-
 const express = require('express');
 
 const app = express();
-const fs = require('fs');
+
 const cors = require('cors');
 
 const PORT = 4000;
@@ -28,8 +26,8 @@ app.get("/user", (req, res) => {
 app.get("/user/:id", (req, res) => {
 
     const id = Number(req.params.id)
-   const user = users.find((user)=> user.id === id)
-   
+    const user = users.find((user) => user.id === id)
+
     res.send(user);
 
 })

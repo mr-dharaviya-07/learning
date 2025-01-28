@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import './App.css'
 import { useId } from 'react';
@@ -13,13 +13,16 @@ function App() {
 
   let id1 = useId()
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   setCount(count + 1)
+  // }, [input]);
+
+  const value = useCallback(() => {
     setCount(count + 1)
   }, [input]);
 
-  // setTimeout(()=>{
-  //   setCount(count + 1)
-  // },1000)
+    // setCount(count + 1)
+
 
   const copy = () => {
     inputElement.current.focus();

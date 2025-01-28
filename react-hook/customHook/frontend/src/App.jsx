@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Register } from './Components/Register';
 import { UserUpdate } from './Components/UserUpdate';
 import { BrowserRouter, Routes, Route } from "react-router";
-import { Home } from './Components/home';
+import { Home } from './Components/Home';
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {

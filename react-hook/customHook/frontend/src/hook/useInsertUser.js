@@ -1,44 +1,43 @@
-// import { useEffect, useState } from "react";
+import { useMutation } from "react-query";
 
 
-// export const useInsertUser = (url) => {
+export const useInsertUser = (url) => {
 
+    const mutation = useMutation({
+        mutationKey: ['InsertUser'],
+        mutationFn: async (data) => {
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-//     const [response, setResponse] = useState({})
+                return await res.json();
 
-//     const InsertData = async (userData) => {
-//         try {
-//             const res = await fetch(url, {
-//                 method: "POST",
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify(userData)
-//             });
+            } catch (err) {
+                return await err
+            }
+        }
+    });
 
-//             const result = await res.json();
-//             setResponse(result)
-
-//         } catch (err) {
-//             setResponse(err);
-//         }
-//     };
-
-
-//     return { response, InsertData };
-// }
-
-
-
-export const useInsertUser = async ({ url, data }) => {
-
-    const res = await fetch(url, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-
-    return await res.json();
+    return  mutation ;
 }
+
+
+
+// export const useInsertUser = async ({url , data}) => {
+
+//     const res = await fetch("url", {
+//         method: "POST",
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify("data")
+//     })
+
+
+//     return await res.json();
+// }

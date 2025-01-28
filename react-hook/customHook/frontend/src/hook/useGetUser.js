@@ -1,36 +1,27 @@
+import { useMutation, useQuery } from "react-query";
 
+export const useGetUser = (url,id) => {
 
-// import { useEffect, useState } from "react";
+    // // console.log(url);
+    // const mutation = useMutation({
+    //     mutationKey: ['GetUser'],
+    //     mutationFn: async (id) => {
+    //         // console.log(id);
+    //         const res = await fetch(`${url}/${id}`);
+    //         return await res.json();
+    //     }
+    // })
+    // return mutation
 
-// export const useGetUser = (url,id) => {
-//     const [userData, setuserData] = useState({})
-
-//     useEffect(()=>{
-//         const fetchData = async () => {
-//             try {
-//                 const res = await fetch(`${url}/${id}`);
-//                 const result = await res.json();
-//                 setuserData(result);
-//                 // console.log(result)
-//             } catch (err) {
-//                 console.error("Fetch error:", err);
-//             }
-//         }
-//         fetchData();
-//     },[]);
-
-
-//     return userData;
-// };
-
-
-
-export const useGetUser = async ({queryKey}) => {
-   const [id,url] = queryKey;
-
-    const response = await fetch(`${url}/${id}`);
-    return await response.json();
-};
+    const query = useQuery({
+        queryKey: ['users'],
+        queryFn: async () => {
+            const res = await fetch(`${url}/${id}`)
+            return await res.json()
+        }
+    })
+    return query
+}
 
 
 
