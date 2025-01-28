@@ -40,7 +40,6 @@ export const Form = ({ data }) => {
     };
 
 
-    console.log("response :", mutation.data);
 
     return (
         <>
