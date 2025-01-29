@@ -2,15 +2,14 @@
 import { useForm } from "react-hook-form"
 import { Validation } from "./validation";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Response } from "./response";
+import { useInsertUser } from "../hooks/useInsertUser";
 
 export const Register = () => {
 
-    const [response, setResponse] = useState('');
-    const [responseError, setResponseError] = useState('');
     const [alert, setAlert] = useState(false)
-
+    const mutation = useInsertUser('http://localhost:4000/register');
 
     const {
         register,
@@ -24,7 +23,7 @@ export const Register = () => {
 
         setTimeout(() => {
             setAlert(false)
-        }, 1200)
+        }, 2200)
     }
     const navigate = useNavigate();
 
@@ -43,42 +42,21 @@ export const Register = () => {
         // Append the profile picture file
         formData.append('profilePicture', data.profilePicture[0]);
 
-        const sendData = async () => {
 
-            try {
-                const res = await fetch("http://localhost:4000/register", {
-                    method: 'POST',
-                    body: formData
-                })
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    setResponseError(data.message);
-                    setResponse("");
-
-                    showAlert();
-                    return
-                }
-
-                setResponse(data.message);
-                setResponseError("");
-
-                showAlert();
-                localStorage.setItem('userId', data.userId);
-                setTimeout(() => {
-                    navigate('/profile');
-                }, 2300)
-
-            }
-            catch (error) {
-                console.log(error);
-                setResponseError(`Error :${error.message}`);
-            }
-        }
-        sendData();
+        mutation.mutate(formData);
+        showAlert();
 
     }
+
+    useEffect(() => {
+        if (mutation.isSuccess) {
+            localStorage.setItem('id', mutation.data.id);
+
+            setTimeout(() => {
+                navigate('/profile')
+            }, 1500)
+        }
+    }, [mutation.isSuccess, mutation.data]);
 
     const password = watch('password');
 
@@ -88,7 +66,8 @@ export const Register = () => {
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className="bg-white w-96 flex flex-col items-center justify-evenly rounded-lg shadow-2xl" style={{ minHeight: "730px" }}>
                     <h1 className="relative top-4 text-blue-600 font-semibold m-2" style={{ fontSize: "42px" }}> Register</h1>
 
-                    {responseError ? <Response value={{ text: responseError, response: "error" }} alert={alert} /> : <Response value={{ text: response, response: "" }} alert={alert} />}
+                    {mutation.isSuccess && <Response value={{ text: mutation.data.success, response: "" }} alert={alert} />}
+                    {mutation.isError && <Response value={{ text: mutation.error.message, response: "error" }} alert={alert} />}
 
                     <div className="flex w-5/6 flex-col my-1">
                         <label htmlFor="name" className="text-base p-1">Name</label>
@@ -122,7 +101,8 @@ export const Register = () => {
                         <label htmlFor="profilePicture" className="text-base p-1">Profile Picture</label>
                         <input type="file" name="profilePicture" id="profilePicture" className={`h-10 p-1 rounded-md border-2  ${errors.profilePicture ? "border-rose-500 focus:outline-red-500" : "border-black focus:outline-black"}`}
                             {...register("profilePicture", {
-                                required: "Upload your Profile Picture", validate: {type: (file) => ['image/jpeg', 'image/png'].includes(file[0]?.type) || 'Only JPEG and PNG files are allowed'
+                                required: "Upload your Profile Picture", validate: {
+                                    type: (file) => ['image/jpeg', 'image/png'].includes(file[0]?.type) || 'Only JPEG and PNG files are allowed'
                                 }
                             })} />
                         {errors.profilePicture && (<Validation value={{ text: errors.profilePicture.message, component: "validation" }} />)}

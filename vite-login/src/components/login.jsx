@@ -1,18 +1,21 @@
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Validation } from './validation';
 import { useForm } from "react-hook-form"
 import { Response } from './response';
+import { useCheck } from '../hooks/useCheck';
 
 
 const Login = () => {
 
-    const [response, setResponse] = useState('');
-    const [responseError, setResponseError] = useState('');
+    // const [response, setResponse] = useState('');
+    // const [responseError, setResponseError] = useState('');
     const [alert, setAlert] = useState(false)
     const navigate = useNavigate();
+
+    const mutation = useCheck('http://localhost:4000/login');
 
     const {
         register,
@@ -30,48 +33,64 @@ const Login = () => {
 
     const onSubmit = (data) => {
 
-        const user = data;
-        const fectData = async () => {
+        // console.log(data);
+        mutation.mutate(data);
 
-            try {
-                const res = await fetch("http://localhost:4000/login", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(user)
-                })
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    setResponseError(data.message);
-                    setResponse("");
-                    showAlert();
-                    return
-                }
-
-                setResponse(data.message);
-                setResponseError("");
-                showAlert();
+        showAlert();
 
 
-                localStorage.setItem("userId", data.userId);
+        //     const user = data;
+        //     const fectData = async () => {
 
-                setTimeout(() => {
-                    navigate('/profile');
-                }, 2200);
+        //         try {
+        //             const res = await fetch("http://localhost:4000/login", {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json'
+        //                 },
+        //                 body: JSON.stringify(user)
+        //             })
+
+        //             const data = await res.json();
+
+        //             if (!res.ok) {
+        //                 setResponseError(data.message);
+        //                 setResponse("");
+        //                 showAlert();
+        //                 return
+        //             }
+
+        //             setResponse(data.message);
+        //             setResponseError("");
+        //             showAlert();
+
+
+        //             localStorage.setItem("userId", data.userId);
+
+        //             setTimeout(() => {
+        //                 navigate('/profile');
+        //             }, 2200);
 
 
 
-            }
-            catch (error) {
-                setResponse(`Error : ${error.message}`);
-            }
-        }
-        fectData();
-
+        //         }
+        //         catch (error) {
+        //             setResponse(`Error : ${error.message}`);
+        //         }
+        //     }
+        //     fectData();
     }
+
+    useEffect(() => {
+        if (mutation.isSuccess) {
+            localStorage.setItem('id', mutation.data.id);
+
+            setTimeout(() => {
+                navigate('/profile')
+            }, 1500)
+        }
+    }, [mutation.isSuccess, mutation.data]);
+
 
     const registerPage = () => {
         navigate("/register");
@@ -83,8 +102,8 @@ const Login = () => {
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className="bg-white w-96 h-96 flex flex-col items-center justify-center rounded-md shadow-2xl" style={{ height: "550px" }}>
                     <h1 className="relative bottom-2 text-blue-600 text-4xl font-medium m-5">Login</h1>
 
-                    {responseError ? <Response value={{ text: responseError, response: "error" }} alert={alert} /> : <Response value={{ text: response, response: "" }} alert={alert} />}
-
+                    {mutation.isSuccess && <Response value={{ text: mutation.data.success, response: "" }} alert={alert} />}
+                    {mutation.isError && <Response value={{ text: mutation.error.message, response: "error" }} alert={alert} />}
 
                     <div className="flex w-4/5 flex-col m-5 ">
                         <label htmlFor="email" className="text-base p-1 ">Email Address</label>

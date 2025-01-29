@@ -6,13 +6,17 @@ import { Validation } from "./validation"
 import { Response } from "./response"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { useUpdateUser } from "../hooks/useUpdateUser";
 
 export const Form = ({ data }) => {
 
-    const [response, setResponse] = useState('');
-    const [responseError, setResponseError] = useState('');
-    const [profilePicture, setProfilePicture] = useState(data.profilePicture);
+    const [profilePicture, setProfilePicture] = useState(data.profile_picture);
     const [alert, setAlert] = useState(false);
+
+    const id = localStorage.getItem('id');
+
+    const mutation = useUpdateUser('http://localhost:4000/update-profile', id);
+
     const navigate = useNavigate();
 
     const {
@@ -24,10 +28,10 @@ export const Form = ({ data }) => {
         defaultValues: {
             name: data.name,
             email: data.email,
-            dob: data.dob,
-            phoneNumber: data.phoneNumber,
+            dob: data.formatted_dob,
+            phoneNumber: data.phone_number,
             gender: data.gender,
-            profilePicture: data.profilePicture
+            profilePicture: data.profile_picture
         }
     })
 
@@ -42,6 +46,7 @@ export const Form = ({ data }) => {
 
     const onSubmit = (data) => {
 
+        console.log(data);
         const formData = new FormData();
 
         // Append form fields
@@ -54,40 +59,46 @@ export const Form = ({ data }) => {
         formData.append('oldProfilePicture', profilePicture);
 
 
-        const userId = localStorage.getItem('userId');
+        mutation.mutate(formData);
+        showAlert();
 
-        const sendData = async () => {
+        setTimeout(() => {
+            navigate('/profile');
+        }, 2000)
 
-            try {
-                const res = await fetch(`http://localhost:4000/update-profile/${userId}`, {
-                    method: 'PUT',
-                    body: formData
-                })
 
-                const data = await res.json();
+        // const sendData = async () => {
 
-                if (!res.ok) {
-                    setResponseError(data.message);
-                    setResponse("");
+        //     try {
+        //         const res = await fetch(`http://localhost:4000/update-profile/${id}`, {
+        //             method: 'PUT',
+        //             body: formData
+        //         })
 
-                    showAlert();
-                    return
-                }
-                setResponse(data.message);
-                setResponseError("");
-                showAlert();
+        //         const data = await res.json();
 
-                setTimeout(() => {
-                    navigate('/profile');
-                }, 2000)
+        //         if (!res.ok) {
+        //             setResponseError(data.message);
+        //             setResponse("");
 
-            }
-            catch (error) {
-                console.log(error);
-                // setResponseError(`Error :${error.message}`);
-            }
-        }
-        sendData();
+        //             showAlert();
+        //             return
+        //         }
+        //         setResponse(data.message);
+        //         setResponseError("");
+        //         showAlert();
+
+        //         setTimeout(() => {
+        //             navigate('/profile');
+        //         }, 2000)
+
+        //     }
+        //     catch (error) {
+        //         console.log(error);
+        //         // setResponseError(`Error :${error.message}`);
+        //     }
+        // }
+        // sendData();
 
     }
 
@@ -101,8 +112,9 @@ export const Form = ({ data }) => {
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className=" m-2 w-96 rounded-lg bg-white flex flex-col justify-center items-center shadow-2xl" >
 
                     <h1 className="relative top-4 text-blue-600 font-semibold m-2" style={{ fontSize: "30px" }}>Update Your Profile</h1>
-                    
-                    {responseError ? <Response value={{ text: responseError, response: "error" }} alert={alert} /> : <Response value={{ text: response, response: "" }} alert={alert} />}
+
+                    {mutation.isSuccess && <Response value={{ text: mutation.data.success, response: "" }} alert={alert} />}
+                    {mutation.isError && <Response value={{ text: mutation.error.message, response: "error" }} alert={alert} />}
 
                     <div className="flex w-5/6 flex-col m-3">
                         <label htmlFor="name" className="text-base p-1">Name</label>
