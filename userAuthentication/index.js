@@ -44,25 +44,26 @@ app.post('/login', (req, res) => {
 
     try {
 
+        console.log(req.body);
         connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
 
             if (error) {
-                return res.status(500).send({ message: "Server Error" });
+                return res.status(500).send({ error: "Server Error" });
             }
             if (results.length == 0) {
-                return res.status(500).send({ message: "Invalid Email and Password" });
+                return res.status(500).send({ error: "Invalid Email and Password" });
             }
             const user = results[0];
             const match = await bcrypt.compare(req.body.password, user.password);
 
             if (match) {
-                return res.status(200).send({ message: "Success! Login Successfull....", userId: user.id });
+                return res.status(200).send({ success: "Success! Login Successfull....", id: user.id });
             }
-            res.status(500).send({ message: "Invalid Email and Password" });
+            res.status(500).send({ error: "Invalid Email and Password" });
 
         })
     } catch {
-        res.status(500).send({ message: "Server Error" });
+        res.status(500).send({ error: "Server Error" });
     }
 
 });
@@ -74,35 +75,35 @@ app.post('/register', upload.single('profilePicture'), async (req, res) => {
         const fileName = `${req.file.filename}`;
         const { name, email, phoneNumber, dob, gender, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10); 
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         connection.query('SELECT * FROM register_user WHERE email = ? ', [req.body.email], (error, results) => {
 
             if (error) {
                 console.log(error);
-                return res.status(500).send({ message: "Server Error" }); 
+                return res.status(500).send({ error: "Server Error" });
             }
             const user = results[0];
 
             if (user) {
-                return res.status(500).send({ message: "User already register" });
+                return res.status(500).send({ error: "User already register" });
             }
 
 
             connection.query('INSERT INTO register_user (name,email,phone_number,gender,dob,profile_picture,password) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, phoneNumber, gender, dob, fileName, hashedPassword], (error, results) => {
                 if (error) {
                     console.log(error);
-                    return res.status(500).send({ message: "Server Error" });
+                    return res.status(500).send({ error: "Server Error" });
                 }
             });
 
             connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
 
                 if (error) {
-                    return res.status(500).send({ message: "Server Error" });
+                    return res.status(500).send({ error: "Server Error" });
                 }
                 const user = results[0];
-                res.status(200).send({ message: "Data Resigter Successfully!", userId: user.id });
+                res.status(200).send({ success: "Data Resigter Successfully!", id: user.id });
             });
 
         });
@@ -135,17 +136,17 @@ app.get('/get-profile/:userId', async (req, res) => {
 
 })
 
-app.put('/update-profile/:userId',upload.single('profilePicture'), (req, res) => {
+app.put('/update-profile/:userId', upload.single('profilePicture'), (req, res) => {
 
     const userId = req.params.userId;
     const { name, phoneNumber, dob, gender } = req.body;
 
     let profilePicture = req.file ? req.file.filename : req.body.oldProfilePicture;
-    connection.query('UPDATE register_user SET name = ?,phone_number = ?,gender = ?, dob = ?, profile_picture =? WHERE id = ?', [name, phoneNumber, gender, dob,profilePicture,userId], (error, results) => {
+    connection.query('UPDATE register_user SET name = ?,phone_number = ?,gender = ?, dob = ?, profile_picture =? WHERE id = ?', [name, phoneNumber, gender, dob, profilePicture, userId], (error, results) => {
         if (error) {
-            return res.status(500).send("Server Error");
-        } 
-        res.status(200).send({ message: "Profile Update successfully" });
+            return res.status(500).send({ error: "Server Error" });
+        }
+        res.status(200).send({ success: "Profile Update successfully" });
     })
 })
 
