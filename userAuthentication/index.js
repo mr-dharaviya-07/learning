@@ -44,7 +44,6 @@ app.post('/login', (req, res) => {
 
     try {
 
-        console.log(req.body);
         connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
 
             if (error) {
