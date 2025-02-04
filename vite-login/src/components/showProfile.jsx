@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { Form } from "./form";
+import { ProfileUpadteForm } from "./profileUpadteForm";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../hooks/useGetUser";
+import { useGetOne } from "../hooks/useGetOne";
 
 
 export const ShowProfile = () => {
@@ -18,9 +18,7 @@ export const ShowProfile = () => {
         }
     }, [id]);
 
-    const mutation = useGetUser('http://localhost:4000/get-profile', id)
-
-
+    const mutation = useGetOne('http://localhost:4000/get-profile', id)
 
 
     const showFrom = () => {
@@ -68,7 +66,7 @@ export const ShowProfile = () => {
                 </div>}
             </div >
 
-            {show && <Form data={mutation.data} />}
+            {show && <ProfileUpadteForm data={mutation.data} />}
         </>
     )
 }

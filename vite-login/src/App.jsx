@@ -1,7 +1,7 @@
 
 import './App.css'
-import Login from './components/login.jsx'
-import Profile from './components/profile.jsx';
+import {Login} from './components/login.jsx'
+import {Profile} from './components/profile.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Register } from './components/register.jsx';
 import { ShowProfile } from './components/showProfile.jsx';

@@ -1,29 +1,26 @@
 /* eslint-disable react/no-unescaped-entities */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Validation } from './validation';
 import { useForm } from "react-hook-form"
 import { Response } from './response';
-import { useCheck } from '../hooks/useCheck';
+import { useLogin } from '../hooks/useLogin';
 
 
-const Login = () => {
+export const Login = () => {
 
-    // const [response, setResponse] = useState('');
-    // const [responseError, setResponseError] = useState('');
     const [alert, setAlert] = useState(false)
     const navigate = useNavigate();
 
-    const mutation = useCheck('http://localhost:4000/login');
-
+    const mutation = useLogin('http://localhost:4000/login');
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm()
 
-    const showAlert = () => {
+    const showAlert = async () => {
         setAlert(true);
 
         setTimeout(() => {
@@ -31,65 +28,20 @@ const Login = () => {
         }, 2200)
     }
 
-    const onSubmit = (data) => {
-
-        // console.log(data);
-        mutation.mutate(data);
-
-        showAlert();
-
-
-        //     const user = data;
-        //     const fectData = async () => {
-
-        //         try {
-        //             const res = await fetch("http://localhost:4000/login", {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json'
-        //                 },
-        //                 body: JSON.stringify(user)
-        //             })
-
-        //             const data = await res.json();
-
-        //             if (!res.ok) {
-        //                 setResponseError(data.message);
-        //                 setResponse("");
-        //                 showAlert();
-        //                 return
-        //             }
-
-        //             setResponse(data.message);
-        //             setResponseError("");
-        //             showAlert();
-
-
-        //             localStorage.setItem("userId", data.userId);
-
-        //             setTimeout(() => {
-        //                 navigate('/profile');
-        //             }, 2200);
-
-
-
-        //         }
-        //         catch (error) {
-        //             setResponse(`Error : ${error.message}`);
-        //         }
-        //     }
-        //     fectData();
-    }
-
-    useEffect(() => {
-        if (mutation.isSuccess) {
-            localStorage.setItem('id', mutation.data.id);
+    const onSubmit = async (data) => {
+        try {
+            await mutation.mutateAsync(data);
 
             setTimeout(() => {
                 navigate('/profile')
             }, 1500)
+        } catch (error) {
+            console.log(error)
         }
-    }, [mutation.isSuccess, mutation.data]);
+        showAlert();
+
+    }
+
 
 
     const registerPage = () => {
@@ -132,6 +84,6 @@ const Login = () => {
 
 
 
-export default Login;
+
 
 

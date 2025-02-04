@@ -1,21 +1,20 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-
+/* eslint-disable no-unused-vars */
 import { useForm } from "react-hook-form"
 import { Validation } from "./validation"
 import { Response } from "./response"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { useUpdateUser } from "../hooks/useUpdateUser";
+import { useUpdate } from "../hooks/useUpdate";
 
-export const Form = ({ data }) => {
+export const ProfileUpadteForm = ({ data }) => {
 
     const [profilePicture, setProfilePicture] = useState(data.profile_picture);
     const [alert, setAlert] = useState(false);
 
     const id = localStorage.getItem('id');
 
-    const mutation = useUpdateUser('http://localhost:4000/update-profile', id);
+    const mutation = useUpdate('http://localhost:4000/update-profile', id);
 
     const navigate = useNavigate();
 
@@ -44,12 +43,11 @@ export const Form = ({ data }) => {
         }, 1200)
     }
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
 
         console.log(data);
         const formData = new FormData();
 
-        // Append form fields
         formData.append('name', data.name);
         formData.append('email', data.email);
         formData.append('phoneNumber', data.phoneNumber);
@@ -59,13 +57,16 @@ export const Form = ({ data }) => {
         formData.append('oldProfilePicture', profilePicture);
 
 
-        mutation.mutate(formData);
+        try {
+            await mutation.mutateAsync(formData);
+
+            setTimeout(() => {
+                navigate('/profile')
+            }, 1500)
+        } catch (error) {
+            console.log(error);
+        }
         showAlert();
-
-        setTimeout(() => {
-            navigate('/profile');
-        }, 2000)
-
 
         // const sendData = async () => {
 

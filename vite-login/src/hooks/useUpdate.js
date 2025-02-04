@@ -2,13 +2,12 @@
 import { useMutation } from "@tanstack/react-query";
 
 
-export const useInsertUser = (url) => {
+export const useUpdate = (url, id) => {
 
     const mutation = useMutation({
-        mutationKey: ['InsertUser'],
         mutationFn: async (data) => {
-            const res = await fetch(url, {
-                method: "POST",
+            const res = await fetch(`${url}/${id}`, {
+                method: "PUT",
                 body: data
             });
 
@@ -17,10 +16,9 @@ export const useInsertUser = (url) => {
                 throw new Error(error.error);
             }
 
-            return await res.json();
-        },
-    });
-
+            return await res.json()
+        }
+    })
     return mutation;
-}
 
+}

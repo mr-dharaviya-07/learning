@@ -1,15 +1,16 @@
-
 import { useForm } from "react-hook-form"
 import { Validation } from "./validation";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Response } from "./response";
-import { useInsertUser } from "../hooks/useInsertUser";
+import { useInsert } from "../hooks/useInsert";
+import { useLogin } from "../hooks/useLogin";
 
 export const Register = () => {
 
     const [alert, setAlert] = useState(false)
-    const mutation = useInsertUser('http://localhost:4000/register');
+    const registerMutation = useInsert('http://localhost:4000/register');
+    const loginMutation = useLogin('http://localhost:4000/login');
 
     const {
         register,
@@ -18,7 +19,7 @@ export const Register = () => {
         formState: { errors },
     } = useForm()
 
-    const showAlert = () => {
+    const showAlert = async () => {
         setAlert(true);
 
         setTimeout(() => {
@@ -27,36 +28,39 @@ export const Register = () => {
     }
     const navigate = useNavigate();
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
 
         const formData = new FormData();
 
-        // Append form fields
         formData.append('name', data.name);
         formData.append('email', data.email);
         formData.append('phoneNumber', data.phoneNumber);
         formData.append('dob', data.dob);
         formData.append('gender', data.gender);
         formData.append('password', data.password);
-
-        // Append the profile picture file
         formData.append('profilePicture', data.profilePicture[0]);
 
 
-        mutation.mutate(formData);
-        showAlert();
+        const loginData = {
+            email: data.email,
+            password: data.password
+        }
 
-    }
+        try {
+            await registerMutation.mutateAsync(formData);
 
-    useEffect(() => {
-        if (mutation.isSuccess) {
-            localStorage.setItem('id', mutation.data.id);
+            await loginMutation.mutateAsync(loginData);
 
             setTimeout(() => {
                 navigate('/profile')
             }, 1500)
         }
-    }, [mutation.isSuccess, mutation.data]);
+        catch (error) {
+            console.log(error)
+        }
+        showAlert();
+
+    }
 
     const password = watch('password');
 
@@ -66,8 +70,8 @@ export const Register = () => {
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className="bg-white w-96 flex flex-col items-center justify-evenly rounded-lg shadow-2xl" style={{ minHeight: "730px" }}>
                     <h1 className="relative top-4 text-blue-600 font-semibold m-2" style={{ fontSize: "42px" }}> Register</h1>
 
-                    {mutation.isSuccess && <Response value={{ text: mutation.data.success, response: "" }} alert={alert} />}
-                    {mutation.isError && <Response value={{ text: mutation.error.message, response: "error" }} alert={alert} />}
+                    {registerMutation.isSuccess && <Response value={{ text: registerMutation.data.success, response: "" }} alert={alert} />}
+                    {registerMutation.isError && <Response value={{ text: registerMutation.error.message, response: "error" }} alert={alert} />}
 
                     <div className="flex w-5/6 flex-col my-1">
                         <label htmlFor="name" className="text-base p-1">Name</label>

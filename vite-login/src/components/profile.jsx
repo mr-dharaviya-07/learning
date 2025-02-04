@@ -2,15 +2,15 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../hooks/useGetUser";
+import { useGetOne } from "../hooks/useGetOne";
 
-const Profile = () => {
+export const Profile = () => {
 
     const navigate = useNavigate();
 
     const userId = localStorage.getItem("id");
 
-    const mutation = useGetUser('http://localhost:4000/get-profile', userId)
+    const mutation = useGetOne('http://localhost:4000/get-profile', userId)
 
     const logout = () => {
         localStorage.clear();
@@ -22,7 +22,6 @@ const Profile = () => {
         if (!userId) {
             logout();
         }
-        // fetchData(userId);
     }, [userId]);
 
 
@@ -58,4 +57,3 @@ const Profile = () => {
     );
 }
 
-export default Profile;
