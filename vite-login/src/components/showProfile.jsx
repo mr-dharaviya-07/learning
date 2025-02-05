@@ -33,29 +33,31 @@ export const ShowProfile = () => {
     return (
         <>
             <div className="bg-gray-100 h-screen flex flex-col justify-center items-center">
-                {mutation.isSuccess && <div className=" bg-white h-96 w-96 m-3 flex flex-col justify-around items-center p-2 rounded-lg shadow-2xl">
+                {mutation.isSuccess && <div className=" bg-white h-2/3 w-96 m-3 flex flex-col justify-around items-center p-2 rounded-lg shadow-2xl">
                     <div className="flex">
-                        <img src={`http://localhost:4000/uploads/${mutation.data.profile_picture}`} alt="Profile" className="w-20 aspect-square object-cover object-top rounded-full " />
+                        <img src={`http://localhost:4000/uploads/${mutation.data.profile_picture}`} alt="Profile" className="w-36 aspect-square object-cover object-top rounded-full " />
                     </div>
-                    <div className="flex text-lg ">
-                        <div className="m-1 font-medium">Name :</div>
-                        <div className="m-1">{mutation.data.name}</div>
-                    </div>
-                    <div className="flex text-lg ">
-                        <div className="m-1 font-medium">Email :</div>
-                        <div className="m-1">{mutation.data.email}</div>
-                    </div>
-                    <div className="flex text-lg ">
-                        <div className="m-1 font-medium">Phone Number :</div>
-                        <div className="m-1">{mutation.data.phone_number}</div>
-                    </div>
-                    <div className="flex text-lg ">
-                        <div className="m-1 font-medium">Gender :</div>
-                        <div className="m-1">{mutation.data.gender}</div>
-                    </div>
-                    <div className="flex text-lg ">
-                        <div className="m-1 font-medium">Date of Brith :</div>
-                        <div className="m-1">{mutation.data.formatted_dob}</div>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex text-lg ">
+                            <div className="m-1 font-medium">Name :</div>
+                            <div className="m-1">{mutation.data.name}</div>
+                        </div>
+                        <div className="flex text-lg ">
+                            <div className="m-1 font-medium">Email :</div>
+                            <div className="m-1">{mutation.data.email}</div>
+                        </div>
+                        <div className="flex text-lg ">
+                            <div className="m-1 font-medium">Phone Number :</div>
+                            <div className="m-1">{mutation.data.phone_number}</div>
+                        </div>
+                        <div className="flex text-lg ">
+                            <div className="m-1 font-medium">Gender :</div>
+                            <div className="m-1">{mutation.data.gender}</div>
+                        </div>
+                        <div className="flex text-lg ">
+                            <div className="m-1 font-medium">Date of Brith :</div>
+                            <div className="m-1">{mutation.data.formatted_dob}</div>
+                        </div>
                     </div>
 
                     <div>
