@@ -8,14 +8,14 @@ const cors = require('cors');
 
 const bcrypt = require('bcrypt');
 
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 
 const multer = require('multer');
 
 
 app.use(cors());
-app.use(express.json()); 
-app.use("/uploads", express.static("uploads")); 
+app.use(express.json());  
+app.use("/uploads", express.static("uploads"));
 
 
 const mysql = require('mysql');
@@ -72,19 +72,19 @@ app.post('/login', (req, res) => {
 
 app.post('/register', upload.single('profilePicture'), async (req, res) => {
 
-    try {           
-        const fileName = `${req.file.filename}`;   
+    try {
+        const fileName = `${req.file.filename}`;
         const { name, email, phoneNumber, dob, gender, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);   
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         connection.query('SELECT * FROM register_user WHERE email = ? ', [req.body.email], (error, results) => {
 
             if (error) {
-                console.log(error);         
-                return res.status(500).send({ error: "Server Error" });    
+                console.log(error);
+                return res.status(500).send({ error: "Server Error" });
             }
-            const user = results[0]; 
+            const user = results[0];
 
             if (user) {
                 return res.status(500).send({ error: "User already register" });
@@ -94,17 +94,17 @@ app.post('/register', upload.single('profilePicture'), async (req, res) => {
             connection.query('INSERT INTO register_user (name,email,phone_number,gender,dob,profile_picture,password) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, phoneNumber, gender, dob, fileName, hashedPassword], (error, results) => {
                 if (error) {
                     console.log(error);
-                    return res.status(500).send({ error: "Server Error" }); 
+                    return res.status(500).send({ error: "Server Error" });
                 }
             });
 
             connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
 
                 if (error) {
-                    return res.status(500).send({ error: "Server Error" });  
-                }  
+                    return res.status(500).send({ error: "Server Error" });
+                }
                 const user = results[0];
-                res.status(200).send({ success: "Data Resigter Successfully!", id: user.id }); 
+                res.status(200).send({ success: "Data Resigter Successfully!", id: user.id });
             });
 
         });
@@ -117,7 +117,7 @@ app.post('/register', upload.single('profilePicture'), async (req, res) => {
     }
 
 });
- 
+
 app.get('/get-profile/:userId', async (req, res) => {
 
     const userId = req.params.userId;
@@ -136,7 +136,7 @@ app.get('/get-profile/:userId', async (req, res) => {
     }
 
 })
- 
+
 app.put('/update-profile/:userId', upload.single('profilePicture'), (req, res) => {
 
     const userId = req.params.userId;
@@ -153,11 +153,135 @@ app.put('/update-profile/:userId', upload.single('profilePicture'), (req, res) =
 
 
 
+app.get('/books', (req, res) => {
 
+    try {
+        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM books", (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            }
+            res.status(200).send(results);
+        })
+
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
+
+
+})
+
+
+app.get('/authores', (req, res) => {
+
+    try {
+        connection.query("SELECT * FROM authores", (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            }
+            res.status(200).send(results);
+        })
+
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
+
+
+})
+
+
+app.get('/all-bookdata', (req, res) => {
+
+    try {
+        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM books", (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            }
+            const bookData = results;
+
+            connection.query("SELECT * FROM authores", (error, results) => {
+                if (error) {
+                    return res.status(500).send({ message: "Server Error" })
+                }
+                const authorData = results;
+
+                const books = bookData.map((book) => (
+                    {
+                        ...book,
+                        co_author: book.co_author.split(", "),
+                    }
+                ))
+
+
+                const allDetail = books.map((book) => (
+                    {
+                        ...book,
+                        subRows: authorData.filter((author) =>
+                            author.author_id === book.author_id || book.co_author.includes(author.name))
+                            .map((author) => ({
+                                ...author,
+                                designation: author.author_id == book.author_id ? "Author" : "Co-Author",
+                            }))
+                    }))
+                res.status(200).send(allDetail);
+            })
+
+        })
+
+
+
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
+
+
+})
+
+app.get('/all-authordata', (req, res) => {
+
+    try {
+        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM books", (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            }
+            const bookData = results;
+
+            connection.query("SELECT * FROM authores", (error, results) => {
+                if (error) {
+                    return res.status(500).send({ message: "Server Error" })
+                }
+                const authorData = results;
+
+                //converting to co-authore Array
+                const books = bookData.map((book) => (
+                    {
+                        ...book,
+                        co_author: book.co_author.split(", "),
+                    }
+                ))
+
+                const allDetail = authorData.map((author) => (
+                    {
+                        ...author,
+                        subRows: books.filter((book) => book.author_id === author.author_id || book.co_author.includes(author.name))
+                            .map(book => ({ ...book, co_author: book.co_author.join(", ") }))
+                    }))
+
+                res.status(200).send(allDetail);
+            })
+
+        })
+
+
+
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
+
+
+})
 
 app.listen(PORT, () => {
 
     console.log("Server running on 4000");
 })
 
-  
