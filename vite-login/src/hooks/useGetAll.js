@@ -1,12 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetOne = (url,userId) => {
+export const useGetAll = (url) => {
 
     const query = useQuery({
-        queryKey: [userId],
+        queryKey: [url],
         queryFn: async () => {
-            // console.log(userId);
-            const res = await fetch(`${url}/${userId}`)
+            const res = await fetch(`${url}`)
 
             if (!res.ok) {
                 const error = await res.json();
