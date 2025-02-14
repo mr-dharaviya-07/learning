@@ -1,11 +1,10 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { DashboardLayout, PageContainer } from "@toolpad/core"
 import { Outlet, useNavigate } from "react-router-dom"
-import { Header } from "./header"
+import { UserMenu } from "./Footer/UserMenu"
 import { useEffect, useState } from "react";
-import { useGetOne } from "../hooks/useGetOne";
-import { ProfileContext } from "./Context/profileContext";
+import { useGetOne } from "../../hooks/useGetOne";
+import { ProfileContext } from "../Context/profileContext";
 
 
 
@@ -38,7 +37,7 @@ export const Layout = () => {
 
 
     function showProfile() {
-        navigate("/showProfile");
+        navigate("showProfile");
     }
 
 
@@ -48,7 +47,7 @@ export const Layout = () => {
                 <DashboardLayout slots={{
                     appTitle: () => null,
                     sidebarFooter: () => (
-                        <Header
+                        <UserMenu
                             showProfile={showProfile}
                             isLoggedIn={isLoggedIn}
                             onLogout={logout}

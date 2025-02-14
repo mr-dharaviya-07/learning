@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { ProfileUpadteForm } from "./profileUpadteForm";
 import { useNavigate } from "react-router-dom";
-import { useGetOne } from "../hooks/useGetOne";
+import { useGetOne } from "../../../hooks/useGetOne";
+import {ProfileUpdateForm} from "../profileUpadteForm"
 
 
 export const ShowProfile = () => {
@@ -32,7 +32,7 @@ export const ShowProfile = () => {
 
     return (
         <>
-            <div className="bg-gray-100 h-screen flex flex-col justify-center items-center">
+            <div className="bg-gray-100 h-full flex flex-col justify-center items-center">
                 {mutation.isSuccess && <div className=" bg-white h-2/3 w-96 m-3 flex flex-col justify-around items-center p-2 rounded-lg shadow-2xl">
                     <div className="flex">
                         <img src={`http://localhost:4000/uploads/${mutation.data.profile_picture}`} alt="Profile" className="w-36 aspect-square object-cover object-top rounded-full " />
@@ -68,7 +68,7 @@ export const ShowProfile = () => {
                 </div>}
             </div >
 
-            {show && <ProfileUpadteForm data={mutation.data} />}
+            {show && <ProfileUpdateForm data={mutation.data} />}
         </>
     )
 }

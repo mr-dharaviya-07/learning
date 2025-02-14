@@ -1,15 +1,15 @@
 
 import './App.css'
 import { Login } from './components/login.jsx'
-import { Profile } from './components/profile.jsx';
+import { Profile } from './components/Dashboard/profile.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Register } from './components/register.jsx';
-import { ShowProfile } from './components/showProfile.jsx';
+import { ShowProfile } from './components/Dashboard/Footer/showProfile.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Books } from './components/Profile/books';
-import { Authores } from './components/Profile/Authores.jsx';
-import { Name } from './components/Profile/name.jsx';
-import { Layout } from './components/Layout.jsx';
+import { Books } from './components/Dashboard/Table/Book/books.jsx';
+import { Authores } from './components/Dashboard/Table/Author/Authores.jsx';
+import { DashboardName } from './components/Dashboard/Main/dashboardName.jsx';
+import { Layout } from './components/Dashboard/Layout.jsx';
 
 function App() {
 
@@ -22,13 +22,13 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/profile" element={<Profile />} >
             <Route path="" element={<Layout />} >
-              <Route path="" element={<Name />} />
+              <Route path="" element={<DashboardName />} />
               <Route path="books" element={<Books />} />
               <Route path="authors" element={<Authores />} />
+              <Route path="showProfile" element={<ShowProfile />} />
             </Route>
           </Route>
           <Route path="/register" element={<Register />} />
-          <Route path="/showProfile" element={<ShowProfile />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider >

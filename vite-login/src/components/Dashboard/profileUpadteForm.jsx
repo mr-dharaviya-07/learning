@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { useForm } from "react-hook-form"
-import { Validation } from "./validation"
-import { Response } from "./response"
+import { Validation } from "../validation"
+import { Response } from "../response"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { useUpdate } from "../hooks/useUpdate";
+import { useUpdate } from "../../hooks/useUpdate";
 
-export const ProfileUpadteForm = ({ data }) => {
+export const ProfileUpdateForm = ({ data }) => {
 
     const [profilePicture, setProfilePicture] = useState(data.profile_picture);
     const [alert, setAlert] = useState(false);
@@ -21,7 +21,6 @@ export const ProfileUpadteForm = ({ data }) => {
     const {
         register,
         handleSubmit,
-        watch,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -67,48 +66,13 @@ export const ProfileUpadteForm = ({ data }) => {
             console.log(error);
         }
         showAlert();
-
-        // const sendData = async () => {
-
-        //     try {
-        //         const res = await fetch(`http://localhost:4000/update-profile/${id}`, {
-        //             method: 'PUT',
-        //             body: formData
-        //         })
-
-        //         const data = await res.json();
-
-        //         if (!res.ok) {
-        //             setResponseError(data.message);
-        //             setResponse("");
-
-        //             showAlert();
-        //             return
-        //         }
-        //         setResponse(data.message);
-        //         setResponseError("");
-        //         showAlert();
-
-        //         setTimeout(() => {
-        //             navigate('/profile');
-        //         }, 2000)
-
-        //     }
-        //     catch (error) {
-        //         console.log(error);
-        //         // setResponseError(`Error :${error.message}`);
-        //     }
-        // }
-        // sendData();
-
     }
 
     return (
         <>
-            <div className="fixed top-0 h-screen w-screen bg-black text-white opacity-30"></div>
+            <div className="fixed top-0 left-0 h-full w-full bg-black text-white opacity-30"></div>
 
-            <div className="fixed top-0 h-screen w-screen flex flex-col justify-center items-center">
-
+            <div className="fixed top-50 left-0 h-5/6 w-full flex flex-col justify-center items-center">
 
                 <form onSubmit={handleSubmit(onSubmit)} method="post" className=" m-2 w-96 rounded-lg bg-white flex flex-col justify-center items-center shadow-2xl" >
 

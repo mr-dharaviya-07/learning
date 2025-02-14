@@ -11,7 +11,10 @@ export const useInsert = (url) => {
             try {
                 res = await fetch(url, {
                     method: "POST",
-                    body: data
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 });
             } catch {
                 throw new Error("Server Error");

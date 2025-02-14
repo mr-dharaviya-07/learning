@@ -1,14 +1,10 @@
-/* eslint-disable no-unused-vars */
-
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useGetOne } from "../hooks/useGetOne";
+import { Outlet} from "react-router-dom";
 import { ReactRouterAppProvider } from '@toolpad/core/react-router';
 import { createTheme } from "@mui/material";
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import { Dashboard } from "@mui/icons-material";
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
+
 
 
 const customTheme = createTheme({
@@ -53,17 +49,13 @@ const customTheme = createTheme({
                     "&:hover": {
                         backgroundColor: "#0074cc",
                     },
+                    "& .MuiSvgIcon-root": {
+                        color: "white !important",
+                    },
                 },
             },
         },
-        MuiSvgIcon: {
-            styleOverrides: {
-                root: {
-                    color: "white !important",
-                },
-            },
-        },
-    }
+    }   
 });
 
 
