@@ -6,7 +6,7 @@ const PORT = 4000;
 
 const cors = require('cors');
 
-const bcrypt = require('bcrypt');
+const CryptoJS = require("crypto-js");
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -14,13 +14,13 @@ const multer = require('multer');
 
 
 app.use(cors());
-app.use(express.json());  
+app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({ 
+const connection = mysql.createConnection({
 
     host: 'localhost',
     user: 'root',
@@ -31,7 +31,7 @@ const connection = mysql.createConnection({
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads')
+        cb(null, './uploads') 
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + file.originalname
@@ -46,7 +46,7 @@ app.post('/login', (req, res) => {
 
     try {
 
-        connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
+        connection.query('SELECT * FROM register_users WHERE email = ?', [req.body.email], async (error, results) => {
 
             if (error) {
                 return res.status(500).send({ error: "Server Error" });
@@ -55,9 +55,11 @@ app.post('/login', (req, res) => {
                 return res.status(200).send({ error: "Invalid Email and Password" });
             }
             const user = results[0];
-            const match = await bcrypt.compare(req.body.password, user.password);
 
-            if (match) {
+            const bytes = CryptoJS.AES.decrypt(user.password, '1234');
+            const password = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (req.body.password == password) {
                 return res.status(200).send({ success: "Success! Login Successfull....", id: user.id });
             }
             res.status(500).send({ error: "Invalid Email and Password" });
@@ -76,9 +78,9 @@ app.post('/register', upload.single('profilePicture'), async (req, res) => {
         const fileName = `${req.file.filename}`;
         const { name, email, phoneNumber, dob, gender, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = CryptoJS.AES.encrypt(password, '1234').toString();
 
-        connection.query('SELECT * FROM register_user WHERE email = ? ', [req.body.email], (error, results) => {
+        connection.query('SELECT * FROM register_users WHERE email = ? ', [req.body.email], (error, results) => {
 
             if (error) {
                 console.log(error);
@@ -91,14 +93,14 @@ app.post('/register', upload.single('profilePicture'), async (req, res) => {
             }
 
 
-            connection.query('INSERT INTO register_user (name,email,phone_number,gender,dob,profile_picture,password) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, phoneNumber, gender, dob, fileName, hashedPassword], (error, results) => {
+            connection.query('INSERT INTO register_users (name,email,phone_number,gender,dob,profile_picture,password) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, phoneNumber, gender, dob, fileName, hashedPassword], (error, results) => {
                 if (error) {
                     console.log(error);
                     return res.status(500).send({ error: "Server Error" });
                 }
             });
 
-            connection.query('SELECT * FROM register_user WHERE email = ?', [req.body.email], async (error, results) => {
+            connection.query('SELECT * FROM register_users WHERE email = ?', [req.body.email], async (error, results) => {
 
                 if (error) {
                     return res.status(500).send({ error: "Server Error" });
@@ -123,7 +125,7 @@ app.get('/get-profile/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        connection.query("SELECT * ,DATE_FORMAT(dob, '%Y-%m-%d') AS formatted_dob FROM register_user WHERE id = ?", [userId], (error, results) => {
+        connection.query("SELECT * ,DATE_FORMAT(dob, '%Y-%m-%d') AS formatted_dob FROM register_users WHERE id = ?", [userId], (error, results) => {
             if (error) {
                 return res.status(500).send({ message: "Server Error" })
             }
@@ -141,9 +143,8 @@ app.put('/update-profile/:userId', upload.single('profilePicture'), (req, res) =
 
     const userId = req.params.userId;
     const { name, phoneNumber, dob, gender } = req.body;
-
     let profilePicture = req.file ? req.file.filename : req.body.oldProfilePicture;
-    connection.query('UPDATE register_user SET name = ?,phone_number = ?,gender = ?, dob = ?, profile_picture =? WHERE id = ?', [name, phoneNumber, gender, dob, profilePicture, userId], (error, results) => {
+    connection.query('UPDATE register_users SET name = ?,phone_number = ?,gender = ?, dob = ?, profile_picture =? WHERE id = ?', [name, phoneNumber, gender, dob, profilePicture, userId], (error, results) => {
         if (error) {
             return res.status(500).send({ error: "Server Error" });
         }
@@ -170,17 +171,69 @@ app.get('/books', (req, res) => {
 
 })
 
+app.get('/book/:id', (req, res) => {
+
+    const book_id = req.params.id
+    try {
+        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS publication_date FROM book WHERE book_id = ? ",[book_id], (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            } 
+            const bookData = results[0];
+
+            const book = {
+                ...bookData,
+                co_author: bookData.co_author.split(","), 
+                language: bookData.language.split(",")
+            }
+            res.status(200).send(book);
+        })
+
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
+
+
+})
+
 
 app.get('/authores', (req, res) => {
 
     try {
-        connection.query("SELECT * FROM authores", (error, results) => {
+        connection.query("SELECT * FROM author", (error, results) => {
             if (error) {
                 return res.status(500).send({ message: "Server Error" })
             }
-            res.status(200).send(results);
+            const authorData = results.map((author) => {
+                return { author_id: author.author_id, name: author.name }
+            })
+            // console.log(results);
+            res.status(200).send(authorData);
         })
+    } catch (error) {
+        res.status(500).send({ message: "Server Error" })
+    }
 
+
+})
+
+app.get('/author/:id', (req, res) => {
+
+    const author_id = req.params.id;
+    try {
+        connection.query("SELECT * FROM author WHERE author_id = ?",[author_id], (error, results) => {
+            if (error) {
+                return res.status(500).send({ message: "Server Error" })
+            }
+            const authorData = results[0];
+            // console.log(results);
+            const author = {
+                    ...authorData,
+                    nationality: authorData.nationality.split(","), 
+
+            }
+            res.status(200).send(author);
+        })
     } catch (error) {
         res.status(500).send({ message: "Server Error" })
     }
@@ -192,22 +245,21 @@ app.get('/authores', (req, res) => {
 app.get('/all-bookdata', (req, res) => {
 
     try {
-        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM books", (error, results) => {
+        connection.query("SELECT *,DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM book", (error, results) => {
             if (error) {
                 return res.status(500).send({ message: "Server Error" })
             }
             const bookData = results;
 
-            connection.query("SELECT * FROM authores", (error, results) => {
+            connection.query("SELECT * FROM author", (error, results) => {
                 if (error) {
                     return res.status(500).send({ message: "Server Error" })
                 }
                 const authorData = results;
-
                 const books = bookData.map((book) => (
                     {
                         ...book,
-                        co_author: book.co_author.split(", "),
+                        co_author: book.co_author.split(","),
                     }
                 ))
 
@@ -239,13 +291,13 @@ app.get('/all-bookdata', (req, res) => {
 app.get('/all-authordata', (req, res) => {
 
     try {
-        connection.query("SELECT *, DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM books", (error, results) => {
+        connection.query("SELECT *,DATE_FORMAT(publication_date, '%Y-%m-%d') AS formatted_date FROM book", (error, results) => {
             if (error) {
                 return res.status(500).send({ message: "Server Error" })
             }
             const bookData = results;
 
-            connection.query("SELECT * FROM authores", (error, results) => {
+            connection.query("SELECT * FROM author", (error, results) => {
                 if (error) {
                     return res.status(500).send({ message: "Server Error" })
                 }
@@ -255,7 +307,7 @@ app.get('/all-authordata', (req, res) => {
                 const books = bookData.map((book) => (
                     {
                         ...book,
-                        co_author: book.co_author.split(", "),
+                        co_author: book.co_author.split(","),
                     }
                 ))
 
@@ -279,6 +331,185 @@ app.get('/all-authordata', (req, res) => {
 
 
 })
+
+
+
+app.post('/insert-book', async (req, res) => {
+
+    try {
+
+        const { title, author_id, author, co_author, publication_date, genre, language, price } = req.body
+
+        const co_authors = co_author.toString()
+        const languages = language.toString()
+
+        connection.query('SELECT * FROM book WHERE title = ? ', [title], (error, results) => {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({ error: "Server Error" });
+            }
+            const user = results[0];
+
+            if (user) {
+                return res.status(500).send({ error: "Book already register" });
+            }
+
+
+            connection.query('INSERT INTO book (title,author_id,author,co_author,genre,publication_date,language,price) VALUES (?, ?, ?, ?, ?, ?, ?,?)', [title, author_id, author, co_authors, genre, publication_date, languages, price], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({ error: "Server Error" });
+                }
+                res.status(200).send({ success: "Data Resigter Successfully!" });
+
+            });
+
+        });
+
+
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
+
+app.post('/insert-author', async (req, res) => {
+
+    try {
+
+        const { name, email, contact_no, nationality } = req.body
+
+        const nationalityString = nationality.toString()
+        connection.query('SELECT * FROM author WHERE email = ? ', [email], (error, results) => {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({ error: "Server Error" });
+            }
+            const user = results[0];
+
+            if (user) {
+                return res.status(500).send({ error: "Author already register" });
+            }
+
+
+            connection.query('INSERT INTO author (name,email,contact_no,nationality) VALUES (?, ?, ?, ?)', [name, email, contact_no, nationalityString], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({ error: "Server Error" });
+                } 
+                res.status(200).send({ success: "Data Resigter Successfully!" });
+            });
+
+        });
+
+
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
+
+
+app.put('/update-book/:id', async (req, res) => {
+
+    const book_id = req.params.id;
+    try {
+
+        const { title, author_id, author, co_author, publication_date, genre, language, price } = req.body
+
+        const co_authors = co_author.toString()
+        const languages = language.toString()
+
+        connection.query('UPDATE book SET title = ?, author_id = ?, author = ?, co_author = ?, genre = ?, publication_date = ?, language = ?, price = ? WHERE book_id = ?',
+            [title, author_id, author, co_authors, genre, publication_date, languages, price, book_id], (error, results) => {
+
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({ error: "Server Error" });
+                }
+                res.status(200).send({ success: "Book Update Successfully!" });
+            });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
+
+app.put('/update-author/:id', async (req, res) => {
+
+    const author_id = req.params.id;
+    try {
+
+        const { name, email, contact_no, nationality } = req.body
+
+
+        const nationalityString = nationality.toString() 
+
+        connection.query('UPDATE author SET name = ?, email = ?, contact_no = ?, nationality = ? WHERE author_id = ?',
+            [name, email, contact_no, nationalityString, author_id], (error, results) => {
+
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({ error: "Server Error" });
+                }
+                res.status(200).send({ success: "Author Update Successfully!" });
+            });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
+
+app.delete('/delete-book/:id', async (req, res) => {
+
+    const book_id = req.params.id;
+    try {
+        connection.query('DELETE FROM book WHERE book_id = ?', [book_id], (error, results) => {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({ error: "Server Error" });
+            }
+            res.status(200).send({ success: "Book Delete Successfully!" });
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
+
+app.delete('/delete-author/:id', async (req, res) => {
+
+    const author_id = req.params.id;
+
+    try {
+        connection.query('DELETE FROM author WHERE author_id = ?', [author_id], (error, results) => {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({ error: "Server Error" });
+            }
+            res.status(200).send({ success: "Author Delete Successfully!" });
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Server Error" });
+    }
+
+});
 
 app.listen(PORT, () => {
 
