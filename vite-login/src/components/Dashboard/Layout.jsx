@@ -13,10 +13,14 @@ export const Layout = () => {
 
     let userId = localStorage.getItem("id");
     const [isLoggedIn, setIsLoggedIn] = useState(userId);
+
+
     const profileData = useGetOne('http://localhost:4000/get-profile', userId)
-
+    
     const data = profileData?.data;
+    
 
+    console.log(data);
     const navigate = useNavigate();
 
     const logout = () => {
@@ -64,7 +68,5 @@ export const Layout = () => {
 
         }
     </>
-
-
     )
 }

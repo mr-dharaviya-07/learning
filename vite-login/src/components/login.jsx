@@ -42,8 +42,6 @@ export const Login = () => {
 
     }
 
-
-
     const registerPage = () => {
         navigate("/register");
     }

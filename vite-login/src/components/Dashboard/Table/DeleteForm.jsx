@@ -50,7 +50,7 @@ export const DeleteForm = ({ open, setOpen, onDelete, deleteData, value }) => {
                 }}
             >
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description" sx={{ fontSize: "16px", textAlign: "center", color: "gray" }}>
+                    <DialogContentText sx={{ fontSize: "16px", textAlign: "center", color: "gray" }}>
                         Are you sure you want to delete this {value}?
                     </DialogContentText>
                 </DialogContent>

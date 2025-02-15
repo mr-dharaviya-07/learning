@@ -4,7 +4,7 @@ import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { Validation } from "../../../validation";
 import { DropDown } from "../DropDown";
-import { DropDownAuthor } from "../DropDownAuthor";
+// import { DropDownAuthor } from "../DropDownAuthor";
 import { languages } from "../file/languages";
 import { genres } from "../file/genre";
 import { useGetAll } from "../../../../hooks/useGetAll";
@@ -15,6 +15,8 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import { useUpdate } from "../../../../hooks/useUpdate";
 import { useInsert } from "../../../../hooks/useInsert";
 import { useGetOne } from "../../../../hooks/useGetOne";
+import { DropDownAuthor } from "../dropDownAuthor";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const BookForm = ({ open, setOpen, refetch, bookId = null }) => {
 
@@ -26,10 +28,18 @@ export const BookForm = ({ open, setOpen, refetch, bookId = null }) => {
         options: authorData.map((option) => option.name),
     };
 
-    const  isBookId = Boolean(bookId)
+
+    const queryClient = useQueryClient();
+    if (bookId) {
+        queryClient.refetchQueries({ queryKey: [bookId]})
+    }
+
+    const isBookId = Boolean(bookId)
     const book = useGetOne('http://localhost:4000/book', bookId, { enabled: isBookId });
     const bookData = book?.data || [];
 
+
+    // console.log(cachedQuery);
 
 
     const showAlert = async () => {
@@ -91,7 +101,7 @@ export const BookForm = ({ open, setOpen, refetch, bookId = null }) => {
                 </DialogTitle>
                 <DialogContent>
                     <Formik
-                    enableReinitialize
+                        enableReinitialize
                         initialValues={{
                             ...initialValuesStructure,
                             ...bookData
@@ -132,7 +142,7 @@ export const BookForm = ({ open, setOpen, refetch, bookId = null }) => {
 
                                 <div className="flex w-11/12 flex-col my-3">
                                     <label htmlFor="co_author" className="block text-sm font-medium">Co-Author</label>
-                                    <Field name="co_author" component={DropDown}  options={authorName.options} multiple={true} placeholder="Select Co-Authors" />
+                                    <Field name="co_author" component={DropDown} options={authorName.options} multiple={true} placeholder="Select Co-Authors" />
                                     {errors.co_author && touched.co_author && <Validation value={{ text: errors.co_author, component: "validation" }} />}
                                 </div>
 

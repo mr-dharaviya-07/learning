@@ -45,7 +45,6 @@ export const DropDown = ({ field, form, options, multiple, placeholder, error, t
             value={value}
             getOptionDisabled={(option) => option === values.author}
             onChange={(event, value) => {
-                console.log(value)
                 form.setFieldValue(field.name, value == null ? "" : value);
                 setValue(value)
             }}

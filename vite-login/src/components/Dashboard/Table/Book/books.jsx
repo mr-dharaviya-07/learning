@@ -25,11 +25,11 @@ export const Books = () => {
         setEditBookData();
         setOpen(true)
     };
-
+ 
 
     const handleEditOpen = (row) => {
         setEditBookData(row.original);
-        setOpen(true);
+            setOpen(true);
     };
 
     const handleDeleteOpen = (row) => {
@@ -58,22 +58,26 @@ export const Books = () => {
 
     const table = useMaterialReactTable({
         data, columns,
-        enableExpandAll: true,
+        enableExpandAll: false,
         enableExpanding: true,
         enableGrouping: true,
         enableEditing: true,
         paginateExpandedRows: true,
         enableColumnDragging: false,
 
-
+        // onGroupingChange: ({row})=>{
+        //     console.log(row)
+        // },
         renderRowActions: ({ row }) => {
-            const isExpanded = Boolean(row.depth !== 0)
+
+            const isExpanded = row.id.includes(".");
+
             return (
                 <Box sx={{ display: 'flex', gap: '1rem' }}>
                     <Tooltip title="Edit">
                         <IconButton onClick={() => handleEditOpen(row)} sx={{
                             "& .MuiSvgIcon-root": {
-                                color: isExpanded ? "gray" : "black" ,
+                                color: isExpanded ? "gray" : "black",
                             },
                         }} disabled={isExpanded}>
                             <EditIcon />
@@ -82,7 +86,7 @@ export const Books = () => {
                     <Tooltip title="Delete">
                         <IconButton onClick={() => handleDeleteOpen(row)} sx={{
                             "& .MuiSvgIcon-root": {
-                                color:isExpanded ? "gray " : "red",
+                                color: isExpanded ? "gray " : "red",
                             },
                         }} disabled={isExpanded}>
                             <DeleteIcon />

@@ -8,7 +8,7 @@ import { ShowProfile } from './components/Dashboard/Footer/showProfile.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Books } from './components/Dashboard/Table/Book/books.jsx';
 import { Authores } from './components/Dashboard/Table/Author/Authores.jsx';
-import { DashboardName } from './components/Dashboard/Main/dashboardName.jsx';
+import { Dashboard } from './components/Dashboard/Main/Dashboard.jsx';
 import { Layout } from './components/Dashboard/Layout.jsx';
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/profile" element={<Profile />} >
             <Route path="" element={<Layout />} >
-              <Route path="" element={<DashboardName />} />
+              <Route path="" element={<Dashboard />} />
               <Route path="books" element={<Books />} />
               <Route path="authors" element={<Authores />} />
               <Route path="showProfile" element={<ShowProfile />} />

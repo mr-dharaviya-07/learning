@@ -66,7 +66,9 @@ export const Authores = () => {
         enableColumnDragging: false,
 
         renderRowActions: ({ row }) => {
-            const isExpanded = Boolean(row.depth !== 0)
+
+            const isExpanded = row.id.includes("."); 
+            const isNotDeleteable = row.subRows.some((subRow)=> subRow.original.author === row.original.name)
             return (
                 <Box sx={{ display: 'flex', gap: '1rem' }}>
                     <Tooltip title="Edit">
@@ -74,16 +76,16 @@ export const Authores = () => {
                             "& .MuiSvgIcon-root": {
                                 color: isExpanded ? "gray" : "black",
                             },
-                        }} disabled={isExpanded}>
+                        }} disabled={isExpanded} >
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton onClick={() => handleDeleteOpen(row)} sx={{
                             "& .MuiSvgIcon-root": {
-                                color: isExpanded ? "gray " : "red",
+                                color: isExpanded || isNotDeleteable ? "gray " : "red",
                             },
-                        }} disabled={isExpanded}>
+                        }} disabled={isExpanded || isNotDeleteable}>
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>

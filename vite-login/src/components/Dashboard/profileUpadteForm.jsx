@@ -6,6 +6,7 @@ import { Response } from "../response"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { useUpdate } from "../../hooks/useUpdate";
+import { useUpdateFormData } from "../../hooks/FormData/useUpdateFormData";
 
 export const ProfileUpdateForm = ({ data }) => {
 
@@ -14,7 +15,7 @@ export const ProfileUpdateForm = ({ data }) => {
 
     const id = localStorage.getItem('id');
 
-    const mutation = useUpdate('http://localhost:4000/update-profile', id);
+    const mutation = useUpdateFormData('http://localhost:4000/update-profile', id);
 
     const navigate = useNavigate();
 

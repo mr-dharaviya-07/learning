@@ -12,10 +12,17 @@ import { useState } from "react";
 import { Response } from "../../../response";
 import { useGetOne } from "../../../../hooks/useGetOne";
 import { useUpdate } from "../../../../hooks/useUpdate";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const AuthorForm = ({ open, setOpen, refetch, initialName = "", authorId = null }) => {
 
     const [alert, setAlert] = useState(false)
+
+
+    const queryClient = useQueryClient();
+    if (authorId) {
+        queryClient.refetchQueries({ queryKey: [authorId]})
+    }
 
     const isAuthorId = Boolean(authorId)
     const author = useGetOne('http://localhost:4000/author', authorId, { enabled: isAuthorId });
