@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useContext } from "react";
 import { ProfileContext } from "../../Context/profileContext";
 import { Box, Card, CardContent, Typography } from "@mui/material";
